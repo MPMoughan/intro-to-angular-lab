@@ -1,7 +1,8 @@
 <html ng-app="booklyApp">
 <head>
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
-  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+  <!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script> -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.2/angular.min.js"></script>
 
   <link href="main.css" rel="stylesheet" type="text/css" />
@@ -11,9 +12,18 @@
 
 <body>
    <div ng-controller="BooksController" class="container">
-      <h4>[[ search box and 'order by' drop down go here]]</h4>
+      <h4>Search: <input type="text" ng-model="query"/>
+
+
+          <!-- sort by drop down menu-->
+          Sort By: <select ng-model="bookSelect">
+            <option value="author"> Author </option>
+            <option value="title"> Title </option>
+      </select></h4>
+
+
       <div class="row">
-        <div class="col-xs-4 col-sm-4 col-md-3 col-lg-2 book" ng-repeat="book in books">
+        <div class="col-xs-4 col-sm-4 col-md-3 col-lg-2 book" ng-repeat="book in books | filter: query | orderBy: bookSelect">
           <div class="col-xs-offset-1 book-title">
             {{book.title}}
           </div>
@@ -26,25 +36,34 @@
 
           <div class="cart-button">
             <span class="price">{{book.price | currency}}
-             [[Add]] <!-- Add to cart button  -->
+             <button ng-click ="addCart(book)" class="btn-primary btn-sm">Add</button>
           </div>
         </div>
         <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1 cart">
-          <h3>your cart has [[item count]] items. </h3>
+
+          <!-- counting items in your cart -->
+          <h3>your cart has {{items.length}} <ng-pluralize count = "items.length" when = "{'1' : 'item.', 'other' : 'items.'}"> </ng-pluralize> </h3>
+
           <table class="carttable">
           <tr>
-            <th width='40%'>Title</th><th width='40%'>Author</th><th width='20%'>Price</th>
+            <th width='40%'>Title</th>
+            <th width='40%'>Author</th>
+            <th width='20%'>Price</th>
           </tr>
-          <tr>
-            <td colspan=3>[[a row for each cart item]]</td>
+          <tr ng-repeat="item in items">
+            <td width='40%'>{{item.title}}</td>
+            <td width='40%'>{{item.author}}</td>
+            <td width='20%'>{{item.price}}</td>
+            <td><button ng-click="deleteItem(item)" class="btn btn-xs btn-danger">Delete</button></td>
           </tr>
           <tr class="cart-total">
-            <td colspan=2 width='80%'>Total</td><td width='20%'>[[total]]</td>
+            <td colspan=2 width='80%'>Total</td><td width='20%'>{{total | currency}}</td>
           </tr>
           </table>
+
           <div class="btn-group cart-button">
-            [[Empty cart button]]
-            <button onclick="alert('Dunno how to check out ...');">Check Out</button>
+            <button type = "button" ng-click="deleteAll()">Empty Cart</button>
+<!--             <button="alert('Dunno how to check out ...');">Check Out</button> -->
           </div>
         </div>
       </div>
